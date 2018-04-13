@@ -1,2 +1,2 @@
-# irbg
-Code examples used for meetings and workshops of the "Iot and Robot Builder Group" of Freiburg
+# IoT and Robot Builder Group
+Code and examples used for meetings and workshops of the "IoT and Robot Builder Group" of Freiburg
