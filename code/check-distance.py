@@ -40,7 +40,7 @@ def main():
     '''    
     
     blinker = Blinker(27, MAX_DELAY) #P8.17
-    ultrasonic = Ultrasonic()
+    ultrasonic = Ultrasonic(66, 69) #P8.7, P8.9
     key = Gpio(65, Gpio.IN) #P8.18
     
     try:
