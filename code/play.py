@@ -126,6 +126,66 @@ def main():
 
     buz = Buzzer(6)
     notes = [
+        (B4,H),
+        (C5,Q),
+        (D5,Q),
+        (D5,Q),
+        (C5,Q),
+        (B4,Q),
+        (A4,Q),
+        (G4,Q),
+        (G4,Q),
+        (A4,Q),
+        (B4,Q),
+        (B4,H),
+        (A4,H),
+        (B4,H),
+        (C5,Q),
+        (D5,Q),
+        (D5,Q),
+        (C5,Q),
+        (B4,Q),
+        (A4,Q),
+        (G4,Q),
+        (G4,Q),
+        (A4,Q),
+        (B4,Q),
+        (A4,Q+E),
+        (G4,E),
+        (G4,H),
+        (A4,H),
+        (B4,Q),
+        (G4,Q),
+        (A4,Q),
+        (B4,E),
+        (C5,E),
+        (B4,Q),
+        (G4,Q),
+        (A4,Q),
+        (B4,E),
+        (C5,E),
+        (B4,Q),
+        (A4,Q),
+        (G4,Q),
+        (A4,Q),
+        (D4,H),
+        (B4,H),
+        (C5,Q),
+        (D5,Q),
+        (D5,Q),
+        (C5,Q),
+        (B4,Q),
+        (A4,Q),
+        (G4,Q),
+        (G4,Q),
+        (A4,Q),
+        (B4,Q),
+        (A4,Q+E),
+        (G4,E),
+        (G4,H),
+        #
+        (M, W),
+        #
         (D4, H),
         (G4, H),
         (B4, H),
@@ -161,11 +221,13 @@ def main():
         (D4, Q),
         (C4, Q)
     ]
+
+    try:    
+        for note in notes:    	
+            buz.playNote(note[0], note[1])
     
-    for note in notes:    	
-        buz.playNote(note[0], note[1])
-    
-    buz.cleanup()
+    finally:
+        buz.cleanup()
     
     
 if __name__ == "__main__":

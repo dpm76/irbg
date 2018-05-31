@@ -95,6 +95,8 @@ class Pwm(object):
         Stops the PWM-signal generation
         '''
         
+        self.setDuty(0)
+        
         f = open("/sys/class/pwm/pwm{0}/run".format(self._port), "w")
         f.write("0")
         f.flush()

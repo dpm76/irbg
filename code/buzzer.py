@@ -29,7 +29,6 @@ class Buzzer(object):
             self._pwm.setDutyPerc(50)
             self._pwm.start()
             sleep(time)
-            self._pwm.setDuty(0)
             self._pwm.stop()
         else:
             sleep(time)
