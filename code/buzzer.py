@@ -6,13 +6,15 @@ class Buzzer(object):
     Makes a buzzer playing notes
     '''
 
-    def __init__(self, port):
+    def __init__(self, port, stopDelay=0):
         '''
         Constructor
         
         @param port: PWM port where the buzzer is connected to
+        @param stopDelay: Delay in seconds to separate notes
         '''
         
+        self._stopDelay = stopDelay
         self._pwm = Pwm(port)
         
 
@@ -28,8 +30,9 @@ class Buzzer(object):
             self._pwm.setFreq(freq)
             self._pwm.setDutyPerc(50)
             self._pwm.start()
-            sleep(time)
+            sleep(time - self._stopDelay)
             self._pwm.stop()
+            sleep(self._stopDelay)
         else:
             sleep(time)
         
