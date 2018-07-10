@@ -4,8 +4,9 @@ def buzz(pin, timer, channel, freq, time):
 
 	t = pyb.Timer(timer, freq=freq)
 	#t.callback(lambda t: p.value( 0 if p.value() == 1 else 1))
-	t.channel(channel, pyb.Timer.PWM, pin=p, pulse_width_percent=50.0)
+	c = t.channel(channel, pyb.Timer.PWM, pin=pin, pulse_width_percent=50.0)
 	sleep(time)
+	c.pulse_width(0)
 	t.deinit()
 
 # Notes durations
