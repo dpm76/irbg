@@ -1,21 +1,24 @@
 from time import sleep
 
-leds = [pyb.LED(1), pyb.LED(2), pyb.LED(3)]
+import pyb
 
-index = 0
-incrementer = 1
+def main():
 
-while True:
-    for led in leds:
-        led.off()
+    leds = [pyb.LED(1), pyb.LED(2), pyb.LED(3)]
+
+    index = 0
+    incrementer = 1
+
+    while True:
+        for led in leds:
+            led.off()
         
-    leds[index].on()
+        leds[index].on()
 
-    index = index + incrementer    
-    if index < 0 or index == len(leds):
-        incrementer *= -1
-        index = index + incrementer
-        index = index + incrementer
+        index = index + incrementer    
+        if index < 0 or index == len(leds):
+            incrementer *= -1
+            index = index + incrementer
+            index = index + incrementer
     
-    sleep(0.15)
-    
+        sleep(0.15)

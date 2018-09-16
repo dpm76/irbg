@@ -1,4 +1,5 @@
 from time import sleep
+import pyb
 
 def buzz(pin, timer, channel, freq, time):
 
@@ -17,7 +18,7 @@ E = 0.125 # Eighth
 S = 0.0625 # Sixteenth
 
 p = pyb.Pin.board.D10
-p.init(pyb.Pin.AF_PP,af=pyb.Pin.AF2_TIM4)
+#p.init(pyb.Pin.AF_PP,af=pyb.Pin.AF2_TIM4)
 
 pyb.Pin.board.LED1.off()
 pyb.Pin.board.LED2.off()
