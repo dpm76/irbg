@@ -36,7 +36,7 @@ class Ultrasonic(object):
         pulseStart = time.time()	
 
         while self._echo.getValue() == Gpio.HIGH:
-	    pass
+            pass
         pulseEnd = time.time()
 
         pulseDuration = pulseEnd-pulseStart
