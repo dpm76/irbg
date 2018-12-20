@@ -3,6 +3,8 @@ import time
 
 class Ultrasonic(object):
 
+    PULSE2CM = 17241.3793 # cm/s
+
     def __init__(self, triggerPort, echoPort):
         '''
         Constructor
@@ -38,7 +40,7 @@ class Ultrasonic(object):
         pulseEnd = time.time()
 
         pulseDuration = pulseEnd-pulseStart
-        dist = round(pulseDuration * 17241.3793, 0) #cm
+        dist = round(pulseDuration * Ultrasonic.PULSE2CM, 0) #cm
 
         return dist
 
@@ -54,8 +56,11 @@ class Ultrasonic(object):
 		
 if __name__ == '__main__':
 
+    GPIO_TRIGGER = 66 #P8.7
+    GPIO_ECHO    = 67 #P8.8
+
     try:
-        meter = Ultrasonic(66, 69) #P8.7, P8.9
+        meter = Ultrasonic(GPIO_TRIGGER, GPIO_ECHO) 
         dist = meter.read()
 	
         print("~ {0} cm".format(dist))
