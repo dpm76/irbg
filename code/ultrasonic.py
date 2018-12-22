@@ -60,10 +60,17 @@ if __name__ == '__main__':
     GPIO_ECHO    = 67 #P8.8
 
     try:
-        meter = Ultrasonic(GPIO_TRIGGER, GPIO_ECHO) 
-        dist = meter.read()
-	
-        print("~ {0} cm".format(dist))
+        print("Press Ctrl+C to finish")
+        meter = Ultrasonic(GPIO_TRIGGER, GPIO_ECHO)
+
+        while True:
+            dist = meter.read()
+            print("~ {0} cm".format(dist))
+            time.sleep(0.5)
+
+    except KeyboardInterrupt:
+        print("\nCtrl+C pressed.")
 
     finally:
+        print("Bye!")
         meter.cleanup()
