@@ -67,7 +67,9 @@ class Gpio(object):
 
         self._value.close()
     
-        f = open("/sys/class/gpio/unexport","w")
-        f.write(str(self._port))
-        f.flush()
-        f.close()
+        #Try to unexport the GPIO port. Some system configurations don't let unexport.
+        try:
+            with open("/sys/class/gpio/unexport","w") as f:
+                f.write(str(self._port))
+        except IOError:
+            pass
