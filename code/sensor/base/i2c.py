@@ -29,7 +29,7 @@ class I2C(object):
         '''
         
         self._address = address
-        self._bus = smbus.SMBus(1)
+        self._bus = smbus.SMBus(channel)
         
 
     def _readWord(self, regH, regL):

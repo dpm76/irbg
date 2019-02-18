@@ -4,10 +4,10 @@ Created on 18/02/2019
 @author: david
 '''
 
-from base.i2c import I2C
+from sensor.base.i2c import I2C
 
 
-B = BLACK = 0
+K = BLACK = 0
 G = GREEN = 1
 R = RED = 2
 Y = YELLOW = 3
@@ -62,7 +62,7 @@ class BiColorLedMatrix(I2C):
         Clears the screen
         '''
         
-        for row in range(0, 0xf):
+        for row in range(0, 16):
         
             self._writeByte(row, 0)
         
@@ -112,13 +112,39 @@ class BiColorLedMatrix(I2C):
         
         for row in range(0, 8):
         
-            memGreen = 0xff
-            memRed = 0xff
+            memGreen = 0
+            memRed = 0
             
             for col in range(0, 8):
                 
-                memGreen &= (matrix[row, col] & GREEN) << col
-                memRed &= (matrix[row, col] & RED) << col
+                memGreen |= (matrix[row][col] & GREEN) << col
+                memRed |= ((matrix[row][col] & RED)>>1) << col
                 
             self._writeByte(row * 2, memGreen)
             self._writeByte((row * 2) + 1, memRed)
+
+
+if __name__ == "__main__":
+
+  from time import sleep
+
+  m = [
+        [K,K,R,R,R,R,K,K],
+        [K,R,Y,Y,Y,Y,R,K],
+        [R,Y,G,Y,Y,G,Y,R],
+        [R,Y,Y,Y,Y,Y,Y,R],
+        [R,Y,G,Y,Y,G,Y,R],
+        [R,Y,Y,G,G,Y,Y,R],
+        [K,R,Y,Y,Y,Y,R,K],
+        [K,K,R,R,R,R,K,K]
+      ]
+
+  try:
+      led = BiColorLedMatrix(0x70, 1)
+      led.start()
+      led.dump(m)
+      led.displayOn()
+      sleep(10)
+      led.displayOff()
+  except:
+      led.cleanup()
