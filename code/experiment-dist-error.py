@@ -15,7 +15,7 @@ class DistanceErrorApp(ExperimentApp):
         super().__init__("Distance Error")
         self.setPollingPeriod(1)
         
-        self._meter = Ultrasonic(GPIO_TRIGGER, GPIO_ECHO)
+        self._meter = Ultrasonic(DistanceErrorApp.GPIO_TRIGGER, DistanceErrorApp.GPIO_ECHO)
 
 
     def getValues(self):
@@ -35,4 +35,4 @@ class DistanceErrorApp(ExperimentApp):
 
 if __name__ == '__main__':
 
-    DistanceErrorApp().setPollMethod(1, getDistance, meter).run()
+    DistanceErrorApp().run()
