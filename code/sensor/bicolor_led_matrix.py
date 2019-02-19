@@ -102,6 +102,16 @@ class BiColorLedMatrix(I2C):
         
         self.setDisplayState(False)
         
+
+    def setDim(self, dim):
+        '''
+        Set the dim level
+
+        @param dim: value between 0 and 15
+        '''
+
+        self._writeByte(0xe0 | (dim & 0x0f), 0)
+
         
     def dump(self, matrix):
         '''
@@ -128,23 +138,61 @@ if __name__ == "__main__":
 
   from time import sleep
 
-  m = [
-        [K,K,R,R,R,R,K,K],
-        [K,R,Y,Y,Y,Y,R,K],
-        [R,Y,G,Y,Y,G,Y,R],
-        [R,Y,Y,Y,Y,Y,Y,R],
-        [R,Y,G,Y,Y,G,Y,R],
-        [R,Y,Y,G,G,Y,Y,R],
-        [K,R,Y,Y,Y,Y,R,K],
-        [K,K,R,R,R,R,K,K]
-      ]
+  matrices = [
+       [
+         [K,K,R,R,R,R,K,K],
+         [K,R,K,K,K,K,R,K],
+         [R,K,R,K,K,R,K,R],
+         [R,K,K,K,K,K,K,R],
+         [R,K,R,K,K,R,K,R],
+         [R,K,K,R,R,K,K,R],
+         [K,R,K,K,K,K,R,K],
+         [K,K,R,R,R,R,K,K]
+       ],
+       [
+         [K,K,R,R,R,R,K,K],
+         [K,R,R,R,R,R,R,K],
+         [R,R,R,R,R,R,R,R],
+         [R,R,R,R,R,R,R,R],
+         [R,R,R,R,R,R,R,R],
+         [R,R,R,R,R,R,R,R],
+         [K,R,R,R,R,R,R,K],
+         [K,K,R,R,R,R,K,K]
+       ],
+       [
+         [K,K,Y,Y,Y,Y,K,K],
+         [K,Y,Y,Y,Y,Y,Y,K],
+         [Y,Y,Y,Y,Y,Y,Y,Y],
+         [Y,Y,Y,Y,Y,Y,Y,Y],
+         [Y,Y,Y,Y,Y,Y,Y,Y],
+         [Y,Y,Y,Y,Y,Y,Y,Y],
+         [K,Y,Y,Y,Y,Y,Y,K],
+         [K,K,Y,Y,Y,Y,K,K]
+       ],
+       [
+         [K,K,G,G,G,G,K,K],
+         [K,G,G,G,G,G,G,K],
+         [G,G,G,G,G,G,G,G],
+         [G,G,G,G,G,G,G,G],
+         [G,G,G,G,G,G,G,G],
+         [G,G,G,G,G,G,G,G],
+         [K,G,G,G,G,G,G,K],
+         [K,K,G,G,G,G,K,K],
+       ]
+   ]
 
   try:
       led = BiColorLedMatrix(0x70, 1)
       led.start()
-      led.dump(m)
-      led.displayOn()
-      sleep(10)
-      led.displayOff()
+      led.setDim(0xf)
+      led.setBlink(BiColorLedMatrix.BLINK_OFF)
+
+      for m in matrices:
+
+          led.dump(m)
+          led.displayOn()
+          sleep(5)
+          led.displayOff()
+
   except:
       led.cleanup()
