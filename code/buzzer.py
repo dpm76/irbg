@@ -6,16 +6,17 @@ class Buzzer(object):
     Makes a buzzer playing notes
     '''
 
-    def __init__(self, port, stopDelay=0):
+    def __init__(self, chipNum, port, stopDelay=0):
         '''
         Constructor
         
+        @param chipNum: PWM chip number where the buzzer is connected to
         @param port: PWM port where the buzzer is connected to
         @param stopDelay: Delay in seconds to separate notes
         '''
         
         self._stopDelay = stopDelay
-        self._pwm = Pwm(port)
+        self._pwm = Pwm(chipNum, port)
         
 
     def playNote(self, freq, time):

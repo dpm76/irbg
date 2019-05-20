@@ -6,25 +6,35 @@ class Pwm(object):
     It uses the sysfs to work
     '''
     
-    def __init__(self, port):
+    def __init__(self, chipNum, port):
         '''
         Constructor
+        
+        @param chipNum: PWM chip number
+        
+        EHRPWM0 (ePWM0) is pwmchip1
+        EHRPWM1 (ePWM1) is pwmchip4
+        EHRPWM2 (ePWM2) is pwmchip7
+        ECAP0 (eCAP0) is pwmchip0
         
         @param port: PWM Port number. It depends on the concrete machine where the programm will run.
         '''
         
+        self._chipNum = chipNum
         self._port = port
         
         #Enable port if it isn't already done
-        if not exists("/sys/class/pwm/pwm{0}".format(self._port)):
-            f = open("/sys/class/pwm/export", "w")
+        if not exists("/sys/class/pwm/pwm-{0}:{1}".format(self._chipNum, self._port)):
+            f = open("/sys/class/pwm/pwmchip{0}/export".format(self._chipNum), "w")
             f.write(str(self._port))
             f.flush()
             f.close()
             
         #Reset values
-        self.stop()
-        self.setDuty(0)        
+        self._period = self.getPeriod()
+        if self._period != 0:
+            self.stop()
+            self.setDuty(0)
         
     
     def setPeriod(self, period):
@@ -34,12 +44,26 @@ class Pwm(object):
         @param period: nanoseconds
         '''
         
-        f = open("/sys/class/pwm/pwm{0}/period_ns".format(self._port), "w")
+        f = open("/sys/class/pwm/pwm-{0}:{1}/period".format(self._chipNum, self._port), "w")
         f.write(str(int(period)))
         f.flush()
         f.close()
         
         self._period = period
+        
+        
+    def getPeriod(self):
+        '''
+        Get the period value. This is the period between pulses.
+        
+        @return: period nanoseconds
+        '''
+        
+        f = open("/sys/class/pwm/pwm-{0}:{1}/period".format(self._chipNum, self._port), "r")
+        line = f.readline()
+        f.close()
+        
+        return int(line)
         
         
     def setFreq(self, freq):
@@ -60,12 +84,29 @@ class Pwm(object):
         @param duty: nanoseconds
         '''
         
-        f = open("/sys/class/pwm/pwm{0}/duty_ns".format(self._port), "w")
+        f = open("/sys/class/pwm/pwm-{0}:{1}/duty_cycle".format(self._chipNum, self._port), "w")
         f.write(str(int(duty)))
         f.flush()
         f.close()
         
         self._duty = duty
+        
+        
+    def setPolarity(self, inversed):
+        '''
+        Set the polarity of the PWM signal. It can only be changed when the pwm is not started.
+        Default value is not inversed.
+        
+        @param inversed: Boolean value.
+        '''
+        
+        f = open("/sys/class/pwm/pwm-{0}:{1}/polarity".format(self._chipNum, self._port), "w")
+        if inversed:
+            f.write("inversed")
+        else:
+            f.write("normal")
+        f.flush()
+        f.close()
         
         
     def setDutyPerc(self, perc):
@@ -84,7 +125,7 @@ class Pwm(object):
         Starts the PWM-signal generation
         '''
         
-        f = open("/sys/class/pwm/pwm{0}/run".format(self._port), "w")
+        f = open("/sys/class/pwm/pwm-{0}:{1}/enable".format(self._chipNum, self._port), "w")
         f.write("1")
         f.flush()
         f.close()        
@@ -97,7 +138,7 @@ class Pwm(object):
         
         self.setDuty(0)
         
-        f = open("/sys/class/pwm/pwm{0}/run".format(self._port), "w")
+        f = open("/sys/class/pwm/pwm-{0}:{1}/enable".format(self._chipNum, self._port), "w")
         f.write("0")
         f.flush()
         f.close()        
@@ -109,7 +150,7 @@ class Pwm(object):
         Frees all using resources
         '''
         
-        f = open("/sys/class/pwm/unexport", "w")
+        f = open("/sys/class/pwm/pwmchip{0}/unexport".format(self._chipNum), "w")
         f.write(str(self._port))
         f.flush()
         f.close()
