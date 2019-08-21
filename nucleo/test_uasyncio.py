@@ -16,7 +16,7 @@ def testLeds(duration=0):
         print("Flash LEDs for {:3d} seconds...".format(duration))
     else:
         print("Flash LEDs forever...".format(duration))
-    leds = [pyb.LED(x) for x in range(1,4)]  # Initialise all four on board LEDs
+    leds = [pyb.LED(x) for x in range(1,4)]  # Initialise all board LEDs
     for x, led in enumerate(leds):           # Create a coroutine for each LED
         t = int((0.2 + x/2) * 1000)
         loop.create_task(toggle(leds[x], t))
@@ -30,4 +30,6 @@ def testLeds(duration=0):
 
 def run():
     testLeds()
-    
+
+if __name__ == "__main__":
+    run()
