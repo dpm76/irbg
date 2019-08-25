@@ -15,7 +15,7 @@ def testLeds(duration=0):
     if duration > 0:
         print("Flash LEDs for {:3d} seconds...".format(duration))
     else:
-        print("Flash LEDs forever...".format(duration))
+        print("Flash LEDs forever...")
     leds = [pyb.LED(x) for x in range(1,4)]  # Initialise all board LEDs
     for x, led in enumerate(leds):           # Create a coroutine for each LED
         t = int((0.2 + x/2) * 1000)
