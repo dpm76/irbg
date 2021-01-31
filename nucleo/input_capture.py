@@ -26,8 +26,13 @@ config = configset["F767_32bit"]
 
 
 def capturePwm(ch):
+    '''
+    The standard for PWM duty cycle is:
+        1000 us (microseconds) -> 0%
+        2000 us (microseconds) -> 100%
+    '''
 
-    cap = ch.capture()
+    cap = ch.capture() # values are us (microseconds)
 
     while True:
         
@@ -39,12 +44,12 @@ def capturePwm(ch):
             
 def capture(ch):
 
-    cap = ch.capture()
+    cap = ch.capture() # values are us (microseconds)
     while True:
             
         tmp = ch.capture()
         if tmp != cap:    
-            print(tmp)
+            print(tmp, "us")
             cap = tmp
                 
             
