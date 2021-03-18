@@ -6,20 +6,29 @@ from dht import DHT11
 from machine import Pin
 
 
-CONFIG_AP = False
+CONFIG_AP = True
 SERVER_PORT = 8080
 SENSOR_DHT_PIN = 23
 
-def startWifiClient():
+def startWifiClient(ssid, passwd, ipconfig=None):
+    '''
+    Starts the wifi module as client
+    @param ssid: Name of the network
+    @param passwd: Password of the network
+    @param ipconfig: (optional) IP configuration.
+                   For example: ["192.168.1.210", "255.255.255.0", "192.168.1.1", "192.168.1.1"]
+                   If not provided the configuration will be done by DHCP.
+    '''
 
     wifi = network.WLAN(network.STA_IF)
     wifi.active(True)
-    wifi.connect("Nenukines-Haus", "8V83QGJR773E9767")
+    wifi.connect(ssid, passwd)
     while not wifi.isconnected():
         utime.sleep(1)
     
-    wifi.ifconfig(["192.168.1.210", "255.255.255.0", "192.168.1.1", "192.168.1.1"])
-    utime.sleep(1)
+    if ipconfig:
+        wifi.ifconfig(ipconfig)
+        utime.sleep(1)
         
         
 def startWifiAp():
@@ -63,7 +72,7 @@ def dispatch(obj):
     temp = sensor.temperature()
     humi = sensor.humidity()
     time = utime.time_ns()
-    
+    #TODO: Add data from the BMP180 sensor
 
     html = """
             <html>
