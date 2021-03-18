@@ -3,11 +3,16 @@ import utime
 import socket
 
 from dht import DHT11
+from bmp180 import Bmp180
 from machine import Pin
 
 
 CONFIG_AP = True
 SERVER_PORT = 8080
+SSID = "SSID"
+PASSWD = "PASSWD"
+IP_CONFIG = ["192.168.1.210", "255.255.255.0", "192.168.1.1", "192.168.1.1"]
+
 SENSOR_DHT_PIN = 23
 
 def startWifiClient(ssid, passwd, ipconfig=None):
@@ -67,12 +72,16 @@ def startServer(dispatchFunc, dispatchObj, port):
 
 def dispatch(obj):
 
-    sensor = obj["sensor"]
-    sensor.measure()
-    temp = sensor.temperature()
-    humi = sensor.humidity()
+    #dht11 = obj["dht11"]
+    #dht11.measure()
+    #temp1 = dht11.temperature()
+    #humi = dht11.humidity()
+    
+    bmp180 = obj["bmp180"]
+    temp2 = bmp180.readTemperature()
+    press = bmp180.readPressure()
+    
     time = utime.time_ns()
-    #TODO: Add data from the BMP180 sensor
 
     html = """
             <html>
@@ -81,13 +90,17 @@ def dispatch(obj):
                 </head>
                 <body>
                     <table>
+                        <tr><th colspan=2>DHT11</th></tr>
                         <tr><td><b>Temperature</b></td><td>{0} C</td></tr>
                         <tr><td><b>Humidity</b></td><td>{1} %</td></tr>
-                        <tr><td><b>Time</b></td><td>{2}</td></tr>
+                        <tr><th colspan=2>BMP180</th></tr>
+                        <tr><td><b>Temperature</b></td><td>{2} C</td></tr>
+                        <tr><td><b>Pressure</b></td><td>{3} Pa</td></tr>
+                        <tr><th colspan=2>{4}</th></tr>
                     </table>
                 </body>
             </html>
-        """.format(temp,humi, time)
+        """.format("???", "???", temp2, press, time)
 
     return html
 
@@ -97,10 +110,11 @@ def main():
     if CONFIG_AP:
         startWifiAp()
     else:
-        startWifiClient()
+        startWifiClient(SSID, PASSWD, IP_CONFIG)
         
-    sensor = DHT11(Pin(SENSOR_DHT_PIN))
-    startServer(dispatch, { "sensor": sensor }, SERVER_PORT)
+    #dht11 = DHT11(Pin(SENSOR_DHT_PIN))
+    bmp180 = Bmp180()
+    startServer(dispatch, { "dht11": None, "bmp180": bmp180 }, SERVER_PORT)
     
     
 if __name__ == '__main__':
