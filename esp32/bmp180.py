@@ -1,5 +1,5 @@
 from utime import sleep_ms
-from machine import I2C
+from machine import I2C, Pin
 from micropython import const
 
 class Bmp180(object):
@@ -35,7 +35,7 @@ class Bmp180(object):
     BYTE_ORDER = "big"
 
 
-    def __init__(self, channel=0, address = 0x77, mode = 1):
+    def __init__(self, channel=0, sclPin=18, sdaPin=19, address = 0x77, mode = 1):
     
         # Private Fields
         _ac1 = 0
@@ -50,7 +50,7 @@ class Bmp180(object):
         _mc = 0
         _md = 0
     
-        self._i2c = I2C(channel)
+        self._i2c = I2C(channel, scl=Pin(sclPin), sda=Pin(sdaPin))
         self._address = address
 
         # Make sure the specified mode is in the appropriate range

@@ -5,6 +5,7 @@ import socket
 from dht import DHT11
 from bmp180 import Bmp180
 from machine import Pin
+from esp32 import raw_temperature
 
 
 CONFIG_AP = True
@@ -13,7 +14,9 @@ SSID = "SSID"
 PASSWD = "PASSWD"
 IP_CONFIG = ["192.168.1.210", "255.255.255.0", "192.168.1.1", "192.168.1.1"]
 
-SENSOR_DHT_PIN = 23
+SENSOR_DHT_PIN = 16
+SENSOR_BMP_SCL = 23
+SENSOR_BMP_SDA = 22
 
 def startWifiClient(ssid, passwd, ipconfig=None):
     '''
@@ -41,7 +44,7 @@ def startWifiAp():
     wifi = network.WLAN(network.AP_IF)
     wifi.active(True)
     wifi.config(essid='ESP32-TEST-AP', authmode=network.AUTH_OPEN)
-    
+
     
 def startServer(dispatchFunc, dispatchObj, port):
 
@@ -66,20 +69,22 @@ def startServer(dispatchFunc, dispatchObj, port):
             conn.sendall(response)
             conn.close()
             
-        except ex:
+        except Exception as ex:
             print(ex)
 
 
 def dispatch(obj):
 
-    #dht11 = obj["dht11"]
-    #dht11.measure()
-    #temp1 = dht11.temperature()
-    #humi = dht11.humidity()
+    dht11 = obj["dht11"]
+    dht11.measure()
+    temp1 = dht11.temperature()
+    humi = dht11.humidity()
     
     bmp180 = obj["bmp180"]
     temp2 = bmp180.readTemperature()
-    press = bmp180.readPressure()
+    press = bmp180.readPressure() / 100.0
+    
+    espTemperature = (raw_temperature()-32)*5/9
     
     time = utime.time_ns()
 
@@ -90,17 +95,19 @@ def dispatch(obj):
                 </head>
                 <body>
                     <table>
-                        <tr><th colspan=2>DHT11</th></tr>
+                        <tr><th colspan=2>Esp32</th></tr>
                         <tr><td><b>Temperature</b></td><td>{0} C</td></tr>
-                        <tr><td><b>Humidity</b></td><td>{1} %</td></tr>
+                        <tr><td><b>Timestamp</b></td><td>{5}</td></tr>
+                        <tr><th colspan=2>DHT11</th></tr>
+                        <tr><td><b>Temperature</b></td><td>{1} C</td></tr>
+                        <tr><td><b>Humidity</b></td><td>{2} %</td></tr>
                         <tr><th colspan=2>BMP180</th></tr>
-                        <tr><td><b>Temperature</b></td><td>{2} C</td></tr>
-                        <tr><td><b>Pressure</b></td><td>{3} Pa</td></tr>
-                        <tr><th colspan=2>{4}</th></tr>
+                        <tr><td><b>Temperature</b></td><td>{3} C</td></tr>
+                        <tr><td><b>Pressure</b></td><td>{4} mbar</td></tr>
                     </table>
                 </body>
             </html>
-        """.format("???", "???", temp2, press, time)
+        """.format(espTemperature, temp1, humi, temp2, press, time)
 
     return html
 
@@ -108,13 +115,13 @@ def dispatch(obj):
 def main():
 
     if CONFIG_AP:
-        startWifiAp()
+        wifi = startWifiAp()
     else:
-        startWifiClient(SSID, PASSWD, IP_CONFIG)
+        wifi = startWifiClient(SSID, PASSWD, IP_CONFIG)
         
-    #dht11 = DHT11(Pin(SENSOR_DHT_PIN))
-    bmp180 = Bmp180()
-    startServer(dispatch, { "dht11": None, "bmp180": bmp180 }, SERVER_PORT)
+    dht11 = DHT11(Pin(SENSOR_DHT_PIN))
+    bmp180 = Bmp180(0, SENSOR_BMP_SCL, SENSOR_BMP_SDA)
+    startServer(dispatch, { "dht11": dht11, "bmp180": bmp180 }, SERVER_PORT)
     
     
 if __name__ == '__main__':
