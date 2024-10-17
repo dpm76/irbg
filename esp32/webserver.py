@@ -7,12 +7,11 @@ from bmp180 import Bmp180
 from machine import Pin
 from esp32 import raw_temperature
 
-
-CONFIG_AP = True
-SERVER_PORT = 8080
-SSID = "SSID"
-PASSWD = "PASSWD"
-IP_CONFIG = ["192.168.1.210", "255.255.255.0", "192.168.1.1", "192.168.1.1"]
+try:
+    import config
+except ImportError:
+    print("I can't find configuration. Remane the file 'config.py.example' as 'config.py', edit accordingly and flash it.")
+    raise
 
 SENSOR_DHT_PIN = 16
 SENSOR_BMP_SCL = 23
@@ -96,14 +95,14 @@ def dispatch(obj):
                 <body>
                     <table>
                         <tr><th colspan=2>Esp32</th></tr>
-                        <tr><td><b>Temperature</b></td><td>{0} C</td></tr>
+                        <tr><td><b>Temperature</b></td><td>{0:.2f} &deg;C</td></tr>
                         <tr><td><b>Timestamp</b></td><td>{5}</td></tr>
                         <tr><th colspan=2>DHT11</th></tr>
-                        <tr><td><b>Temperature</b></td><td>{1} C</td></tr>
-                        <tr><td><b>Humidity</b></td><td>{2} %</td></tr>
+                        <tr><td><b>Temperature</b></td><td>{1:.2f} &deg;C</td></tr>
+                        <tr><td><b>Humidity</b></td><td>{2:.2f} %</td></tr>
                         <tr><th colspan=2>BMP180</th></tr>
-                        <tr><td><b>Temperature</b></td><td>{3} C</td></tr>
-                        <tr><td><b>Pressure</b></td><td>{4} mbar</td></tr>
+                        <tr><td><b>Temperature</b></td><td>{3:.2f} &deg;C</td></tr>
+                        <tr><td><b>Pressure</b></td><td>{4:.2f} mbar</td></tr>
                     </table>
                 </body>
             </html>
@@ -114,14 +113,14 @@ def dispatch(obj):
 
 def main():
 
-    if CONFIG_AP:
+    if config.CONFIG_AP:
         wifi = startWifiAp()
     else:
-        wifi = startWifiClient(SSID, PASSWD, IP_CONFIG)
+        wifi = startWifiClient(config.SSID, config.PASSWD, config.IP_CONFIG)
         
     dht11 = DHT11(Pin(SENSOR_DHT_PIN))
     bmp180 = Bmp180(0, SENSOR_BMP_SCL, SENSOR_BMP_SDA)
-    startServer(dispatch, { "dht11": dht11, "bmp180": bmp180 }, SERVER_PORT)
+    startServer(dispatch, { "dht11": dht11, "bmp180": bmp180 }, config.SERVER_PORT)
     
     
 if __name__ == '__main__':

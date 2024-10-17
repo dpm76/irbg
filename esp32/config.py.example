@@ -1,0 +1,5 @@
+CONFIG_AP = True
+SERVER_PORT = 8080
+SSID = "SSID name"
+PASSWD = "password"
+IP_CONFIG = ["192.168.1.210", "255.255.255.0", "192.168.1.1", "192.168.1.1"]
