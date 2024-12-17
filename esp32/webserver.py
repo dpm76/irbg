@@ -16,6 +16,7 @@ except ImportError:
 SENSOR_DHT_PIN = 16
 SENSOR_BMP_SCL = 23
 SENSOR_BMP_SDA = 22
+LED_PIN = 14
 
 def startWifiClient(ssid, passwd, ipconfig=None):
     '''
@@ -45,17 +46,20 @@ def startWifiAp():
     wifi.config(essid='ESP32-TEST-AP', authmode=network.AUTH_OPEN)
 
     
-def startServer(dispatchFunc, dispatchObj, port):
+def startServer(dispatchFunc, dispatchObj, port, led):
 
+    led.on()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', port))
     s.listen(5)
     
     print("Listening on port {0}...".format(port))
+    led.off()
     
     while True:
         conn, addr = s.accept()
         try:
+            led.on()
             print("Got a connection from {0}".format(addr))
             request = conn.recv(1024)
             print(str(request))
@@ -67,6 +71,7 @@ def startServer(dispatchFunc, dispatchObj, port):
             conn.send('Connection: close\n\n')
             conn.sendall(response)
             conn.close()
+            led.off()
             
         except Exception as ex:
             print(ex)
@@ -113,6 +118,8 @@ def dispatch(obj):
 
 def main():
 
+    led = Pin(LED_PIN, Pin.OUT, Pin.PULL_DOWN)
+    led.on()
     if config.CONFIG_AP:
         wifi = startWifiAp()
     else:
@@ -120,7 +127,8 @@ def main():
         
     dht11 = DHT11(Pin(SENSOR_DHT_PIN))
     bmp180 = Bmp180(0, SENSOR_BMP_SCL, SENSOR_BMP_SDA)
-    startServer(dispatch, { "dht11": dht11, "bmp180": bmp180 }, config.SERVER_PORT)
+    led.off()
+    startServer(dispatch, { "dht11": dht11, "bmp180": bmp180 }, config.SERVER_PORT, led)
     
     
 if __name__ == '__main__':
